@@ -41,7 +41,7 @@ func main() {
 			EnvVar: "",
 		},
 	}
-	app.Author = "Square Inc., CoreOS"
+	app.Author = "Square Inc., CoreOS (Customized by Soramitsu Khmer)"
 	app.Email = ""
 	app.Commands = []cli.Command{
 		cmd.NewInitCommand(),
