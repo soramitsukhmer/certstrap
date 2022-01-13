@@ -67,6 +67,11 @@ func NewSignCommand() cli.Command {
 				Name:  "intermediate",
 				Usage: "Whether generated certificate should be a intermediate",
 			},
+			cli.IntFlag{
+				Name:  "path-length",
+				Value: 0,
+				Usage: "Maximum number of non-self-issued intermediate certificates that may follow this CA certificate in a valid certification path",
+			},
 		},
 		Action: newSignAction,
 	}
@@ -140,7 +145,7 @@ func newSignAction(c *cli.Context) {
 	var crtOut *pkix.Certificate
 	if c.Bool("intermediate") {
 		fmt.Fprintln(os.Stderr, "Building intermediate")
-		crtOut, err = pkix.CreateIntermediateCertificateAuthority(crt, key, csr, expiresTime)
+		crtOut, err = pkix.CreateIntermediateCertificateAuthority(crt, key, csr, expiresTime, c.Int("path-length"))
 	} else {
 		crtOut, err = pkix.CreateCertificateHost(crt, key, csr, expiresTime)
 	}
