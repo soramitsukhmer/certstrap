@@ -120,6 +120,11 @@ func initAction(c *cli.Context) {
 		os.Exit(1)
 	}
 
+	if c.IsSet("path-length") && c.IsSet("exclude-path-length") {
+		fmt.Fprintf(os.Stderr, "The \"path-length\" and \"exclude-path-length\" flags cannot be used together!\n")
+		os.Exit(1)
+	}
+
 	var err error
 	expires := c.String("expires")
 	if years := c.Int("years"); years != 0 {
