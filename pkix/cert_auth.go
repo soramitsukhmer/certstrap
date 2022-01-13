@@ -26,7 +26,7 @@ import (
 
 // CreateCertificateAuthority creates Certificate Authority using existing key.
 // CertificateAuthorityInfo returned is the extra infomation required by Certificate Authority.
-func CreateCertificateAuthority(key *Key, organizationalUnit string, expiry time.Time, organization string, country string, province string, locality string, commonName string, permitDomains []string, pathlen int) (*Certificate, error) {
+func CreateCertificateAuthority(key *Key, organizationalUnit string, expiry time.Time, organization string, country string, province string, locality string, commonName string, permitDomains []string, pathlen int, excludePathlen bool) (*Certificate, error) {
 	authTemplate := newAuthTemplate()
 
 	subjectKeyID, err := GenerateSubjectKeyID(key.Public)
@@ -59,8 +59,12 @@ func CreateCertificateAuthority(key *Key, organizationalUnit string, expiry time
 		authTemplate.PermittedDNSDomains = permitDomains
 	}
 
-	if pathlen > 0 {
-		authTemplate.MaxPathLen = pathlen
+	if !excludePathlen {
+		if pathlen > 0 {
+			authTemplate.MaxPathLen = pathlen
+			authTemplate.MaxPathLenZero = false
+		}
+	} else {
 		authTemplate.MaxPathLenZero = false
 	}
 
@@ -127,7 +131,7 @@ func newAuthTemplate() x509.Certificate {
 	return x509.Certificate{
 		SerialNumber: big.NewInt(1),
 		// NotBefore is set to be 10min earlier to fix gap on time difference in cluster
-		NotBefore: time.Now().Add(-10*time.Minute).UTC(),
+		NotBefore: time.Now().Add(-10 * time.Minute).UTC(),
 		NotAfter:  time.Time{},
 		// Used for certificate signing only
 		KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageCRLSign,
