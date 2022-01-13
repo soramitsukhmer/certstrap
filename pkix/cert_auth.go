@@ -59,7 +59,7 @@ func CreateCertificateAuthority(key *Key, organizationalUnit string, expiry time
 		authTemplate.PermittedDNSDomains = permitDomains
 	}
 
-	if excludePathlen == false {
+	if !excludePathlen {
 		if pathlen > 0 {
 			authTemplate.MaxPathLen = pathlen
 			authTemplate.MaxPathLenZero = false
